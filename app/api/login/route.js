@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { COOKIE, authToken } from "../../../lib/auth";
+import { COOKIE, authToken, teamPassword } from "../../../lib/auth";
 
 export async function POST(request) {
   const { password } = await request.json().catch(() => ({}));
-  if (!process.env.TEAM_PASSWORD || password !== process.env.TEAM_PASSWORD) {
+  const expected = teamPassword();
+  if (!expected || typeof password !== "string" || password.trim() !== expected) {
     return NextResponse.json({ error: "Password salah" }, { status: 401 });
   }
   const res = NextResponse.json({ ok: true });
